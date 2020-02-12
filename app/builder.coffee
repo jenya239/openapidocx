@@ -2,7 +2,7 @@
 { File, Document, Packer, Paragraph, TextRun, PageNumber, PageBreak, AlignmentType, Footer, HeadingLevel, TableOfContents, Table, TableCell, TableRow } =require 'docx'
 
 module .exports =require( './factory' ) .define
-	init: ( @main )->
+	init: ( @json, @tag )->
 		#@doc = new Document
 		@doc = new File
 			styles: 
@@ -36,8 +36,8 @@ module .exports =require( './factory' ) .define
 		for [1..n]
 			res .push @new_line()
 		res
-	dumb: ->
-		@list .push @main .list...
+	# dumb: ->
+	# 	@list .push @main .list...
 	first_page: ->
 		txt =new TextRun
 			text: 'API Reference'
@@ -51,7 +51,7 @@ module .exports =require( './factory' ) .define
 		txt =new TextRun
 			size: 45
 			color: '000000'
-			text: @main .json .info .title
+			text: @json .info .title
 		@list .push new Paragraph ##005B96
 			alignment: AlignmentType .RIGHT
 			children: [ txt ]
@@ -61,13 +61,13 @@ module .exports =require( './factory' ) .define
 		txt =new TextRun
 			size: 20
 			color: '005B96'
-			text: 'API Version: ' + @main .json .info .version
+			text: 'API Version: ' + @json .info .version
 		@list .push new Paragraph ##
 			alignment: AlignmentType .RIGHT
 			children: [ txt ]
 		txt =new TextRun
 			size: 20
-			text: @main .json .info .description
+			text: @json .info .description
 		@list .push new Paragraph ##
 			children: [ txt ]
 			spacing: 
@@ -86,7 +86,7 @@ module .exports =require( './factory' ) .define
 			bold: true
 		txt2 =new TextRun
 			size: 20
-			text: ': ' + @main .json .info .contact .email
+			text: ': ' + @json .info .contact .email
 		@list .push new Paragraph ##
 			children: [ txt, txt2 ]
 			spacing: 
@@ -107,10 +107,12 @@ module .exports =require( './factory' ) .define
 			spacing: 
 				after: 0
 		n =0
-		for k, v of @main .json .paths
+		for k, v of @json .paths
 			n += 1
-			p =require( './path' ) .create k, n, v, @main .json
-			@list .push p .list...
+			p =require( './path' ) .create k, n, v, @json, @
+			if p .methods_count > 0
+				console .log '===', k
+				@list .push p .list...
 
 
 	footer: ->

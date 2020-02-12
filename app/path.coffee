@@ -2,7 +2,7 @@
 { File, Document, Packer, Paragraph, TextRun, PageNumber, PageBreak, AlignmentType, Footer, HeadingLevel, TableOfContents, Table, TableCell, TableRow } =require 'docx'
 
 module .exports =require( './factory' ) .define
-	init: ( @name, @number, @data, @json )->
+	init: ( @name, @number, @data, @json, @builder )->
 		@name =@name .replace /\//g, ''
 		@list =[]
 		txt =new TextRun
@@ -18,7 +18,10 @@ module .exports =require( './factory' ) .define
 			heading: HeadingLevel .HEADING_2
 		n =0
 		for k, v of @data
+			if not v .tags or @builder .tag not in v .tags
+				continue
 			n += 1
 			m =require( './method' ) .create @, k, n, v
 			@list .push m .list...
+		@methods_count =n
 		@list .push new Paragraph children: [ new PageBreak() ]

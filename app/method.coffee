@@ -50,11 +50,12 @@ module .exports =require( './factory' ) .define
 				left: 200
 	process_parameters: ->
 		@parameters ={}
-		for obj in @data .parameters
-			parameter =require( './parameter' ) .create @, obj
-			unless @parameters[ parameter .data .in ]
-				@parameters[ parameter .data .in ] =[]
-			@parameters[ parameter .data .in ] .push parameter
+		if @data .parameters
+			for obj in @data .parameters
+				parameter =require( './parameter' ) .create @, obj
+				unless @parameters[ parameter .data .in ]
+					@parameters[ parameter .data .in ] =[]
+				@parameters[ parameter .data .in ] .push parameter
 		if @data .requestBody
 			for k, v of @data .requestBody .content
 				key =k
@@ -78,6 +79,7 @@ module .exports =require( './factory' ) .define
 			children: [ txt ]
 			spacing: opts .spacing
 	init: ( @path, @name, @number, @data )->
+		console .log @name, @data .tags 
 		@list =[]
 		s =@path .number + '.' + @number
 		s +='. ' + @name .toUpperCase() + ' /' + @path .name
@@ -125,8 +127,9 @@ module .exports =require( './factory' ) .define
 
 		@section_header str: 'EXAMPLE', spacing: { before: 250, after: 320 }
 		example_request ={}
-		for obj in @data .parameters
-			example_request[ obj .name ] =obj .example if obj .example
+		if @data .parameters
+			for obj in @data .parameters
+				example_request[ obj .name ] =obj .example if obj .example
 		@header s1: "REQUEST", indent: { left: 300 }
 		require( './formatter' ) .create @list, example_request, null, 4
 		if @data .requestBody
