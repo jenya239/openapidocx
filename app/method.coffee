@@ -61,13 +61,13 @@ module .exports =require( './factory' ) .define
 				key =k
 				body =v .schema
 				break
-			@header s1: 'REQUEST BODY - ' + key, required: @data .requestBody .required
+			@header s1: 'ТЕЛО ЗАПРОСА - ' + key, required: @data .requestBody .required
 			require( './formatter' ) .create @list, @path .json, body[ '$ref' ], 2
 		if @parameters .query
-			@parameters_header str: 'QUERY PARAMETERS'
+			@parameters_header str: 'ПАРАМЕТРЫ ЗАПРОСА'
 			table =require( './table' ) .create @, @parameters .query
 		if @parameters .header
-			@parameters_header str: 'HEADER PARAMETERS'
+			@parameters_header str: 'ЗАГОЛОВКИ ЗАПРОСА'
 			table =require( './table' ) .create @, @parameters .header
 	section_header: ( opts )->
 		txt =new TextRun
@@ -79,10 +79,10 @@ module .exports =require( './factory' ) .define
 			children: [ txt ]
 			spacing: opts .spacing
 	init: ( @path, @name, @number, @data )->
-		console .log @name, @data .tags 
+		#console .log @name, @data .tags 
 		@list =[]
 		s =@path .number + '.' + @number
-		s +='. ' + @name .toUpperCase() + ' /' + @path .name
+		s +='. ' + @data .summary
 		txt =new TextRun
 			text: s
 			size: 32
@@ -97,7 +97,7 @@ module .exports =require( './factory' ) .define
 			size: 20
 			color: 'B44646'
 			bold: true
-			text: @data .summary
+			text: @name .toUpperCase() + ' /' + @path .name
 		@list .push new Paragraph ##005B96
 			children: [ txt ]
 			spacing: 
@@ -111,40 +111,40 @@ module .exports =require( './factory' ) .define
 			children: [ txt ]
 			# spacing: 
 			# 	before: 200
-		@section_header str: 'REQUEST', spacing: { before: 200 }
+		@section_header str: 'ЗАПРОС', spacing: { before: 200 }
 		@process_parameters() if @data
-		@section_header str: 'RESPONSE', spacing: { before: 250, after: 320 }
+		@section_header str: 'ОТВЕТ', spacing: { before: 250, after: 320 }
 		for code, response of @data .responses
-			@header s1: "STATUS CODE - #{ code }: ", s2: response .description
+			@header s1: "КОД СТАТУСА - #{ code }: ", s2: response .description
 			if response .content
 				for k, v of response .content
 					key =k
 					body =v .schema
 					break
 				continue unless body[ '$ref' ]
-				@header s1: "RESPONSE MODEL - #{ k }", indent: { left: 400 }
+				@header s1: "МОДЕЛЬ ОТВЕТА - #{ k }", indent: { left: 400 }
 				require( './formatter' ) .create @list, @path .json, body[ '$ref' ], 4
 
-		@section_header str: 'EXAMPLE', spacing: { before: 250, after: 320 }
+		@section_header str: 'ПРИМЕР', spacing: { before: 250, after: 320 }
 		example_request ={}
 		if @data .parameters
 			for obj in @data .parameters
 				example_request[ obj .name ] =obj .example if obj .example
-		@header s1: "REQUEST", indent: { left: 300 }
+		@header s1: "ЗАПРОС", indent: { left: 300 }
 		require( './formatter' ) .create @list, example_request, null, 4
 		if @data .requestBody
-			@header s1: "REQUEST BODY", indent: { left: 300 }
+			@header s1: "ТЕЛО ЗАПРОСА", indent: { left: 300 }
 			require( './formatter' ) .create @list, @path .json, body[ '$ref' ], 4, false, true
-		@header s1: "RESPONSE", indent: { left: 300 }
+		@header s1: "ОТВЕТ", indent: { left: 300 }
 		for code, response of @data .responses
-			@header s1: "STATUS CODE - #{ code }: ", s2: response .description, indent: { left: 400 }
+			@header s1: "КОД СТАТУСА - #{ code }: ", s2: response .description, indent: { left: 400 }
 			if response .content
 				for k, v of response .content
 					key =k
 					body =v .schema
 					break
 				continue unless body[ '$ref' ]
-				@header s1: "RESPONSE MODEL - #{ k }", indent: { left: 600 }
+				@header s1: "МОДЕЛЬ ОТВЕТА - #{ k }", indent: { left: 600 }
 				require( './formatter' ) .create @list, @path .json, body[ '$ref' ], 4, false, true
 
 		@list .push new Paragraph

@@ -46,5 +46,6 @@ module .exports =formatter =require( './factory' ) .define
 			for k, v of @obj
 				@str k, v, '', 1
 			@str '}'
+		@str '* - обязательное поле'
 
 		#@str JSON .stringify @obj

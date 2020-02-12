@@ -1,5 +1,6 @@
 
-{ File, Document, Packer, Paragraph, TextRun, PageNumber, PageBreak, AlignmentType, Footer, HeadingLevel, TableOfContents, Table, TableCell, TableRow } =require 'docx'
+{ Media, File, Document, Packer, Paragraph, TextRun, PageNumber, PageBreak, AlignmentType, Header, Footer, HeadingLevel, TableOfContents, Table, TableCell, TableRow } =require 'docx'
+fs =require 'fs'
 
 module .exports =require( './factory' ) .define
 	init: ( @json, @tag )->
@@ -25,8 +26,18 @@ module .exports =require( './factory' ) .define
 		@content()
 		@doc .addSection
 			properties: {}
-			footers: default: new Footer children: [ @footer() ]
+			headers: default: new Header children: [ @header() ]
+			footers: 
+				#first: new Footer children: [ first_footer ]
+				default: new Footer children: [ @footer() ]
 			children: @list
+	first_footer: ->
+		new Paragraph
+			alignment: AlignmentType .CENTER
+			children: [ new TextRun 'Иваново, 2020 год' ]
+			size: 14
+			spacing: 
+				before: 4000
 	new_line: ->
 		txt =new TextRun text: ''
 		txt .break()
@@ -38,7 +49,30 @@ module .exports =require( './factory' ) .define
 		res
 	# dumb: ->
 	# 	@list .push @main .list...
+	sstr: ( s, first =false )->
+		opts =
+			alignment: AlignmentType .CENTER
+			indent:
+				left: 4200
+			children: [ new TextRun s ]
+			size: 20
+		if first
+			opts .spacing =before: 1000
+		@list .push new Paragraph opts
+
 	first_page: ->
+		txt =new TextRun
+			text: 'Общество с ограниченной ответственностью «Альтернатива Софт»'
+			size: 20
+			bold: true
+		@list .push new Paragraph
+			alignment: AlignmentType .CENTER
+			children: [ txt ]
+		@sstr 'УТВЕРЖДЕНА', true
+		@sstr 'приказом ООО «Альтернатива'
+		@sstr 'Софт»'
+		@sstr 'от «28» февраля 2020 года'
+		@sstr '№117'
 		txt =new TextRun
 			text: 'API Reference'
 			size: 35
@@ -47,7 +81,7 @@ module .exports =require( './factory' ) .define
 			alignment: AlignmentType .RIGHT
 			children: [ txt ]
 			spacing: 
-				before: 3500
+				before: 3000
 		txt =new TextRun
 			size: 45
 			color: '000000'
@@ -61,7 +95,7 @@ module .exports =require( './factory' ) .define
 		txt =new TextRun
 			size: 20
 			color: '005B96'
-			text: 'API Version: ' + @json .info .version
+			text: 'Версия API: ' + @json .info .version
 		@list .push new Paragraph ##
 			alignment: AlignmentType .RIGHT
 			children: [ txt ]
@@ -74,7 +108,7 @@ module .exports =require( './factory' ) .define
 				before: 300
 		txt =new TextRun
 			size: 25
-			text: 'CONTACT'
+			text: 'КОНТАКТЫ'
 			bold: true
 		@list .push new Paragraph ##
 			children: [ txt ]
@@ -91,6 +125,7 @@ module .exports =require( './factory' ) .define
 			children: [ txt, txt2 ]
 			spacing: 
 				before: 200
+		@list .push @first_footer()
 	second: ->
 		@list .push new Paragraph children: [ new PageBreak() ]
 		@list .push new TableOfContents 'Index',
@@ -114,7 +149,15 @@ module .exports =require( './factory' ) .define
 				console .log '===', k
 				@list .push p .list...
 
-
+	header: ->
+		image =Media .addImage @doc, fs .readFileSync( './logo.png' ), 200, 28
+		new Paragraph
+			#alignment: AlignmentType .RIGHT,
+			children: [
+				image
+			]
+			spacing: 
+				after: 800
 	footer: ->
 		new Paragraph
 			alignment: AlignmentType .RIGHT,

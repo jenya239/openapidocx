@@ -23,17 +23,17 @@ module .exports =require( './factory' ) .define
 		res =[]
 		ds =[]
 		ds .push
-			s: 'name'
+			s: 'имя'
 			width:
 				size: 2000
 				type: WidthType .DXA
 		ds .push
-			s: 'type'
+			s: 'тип'
 			width:
 				size: 1500
 				type: WidthType .DXA
 		ds .push
-			s: 'description'
+			s: 'описание'
 			width:
 				size: 5300
 				type: WidthType .DXA
@@ -142,6 +142,24 @@ module .exports =require( './factory' ) .define
 		# 	spacing: 
 		# 		before: 150
 		@list .push table
+		txts =[]
+		txts .push new TextRun
+			size: 20
+			color: 'FF4500'
+			text: '*'
+		txts .push new TextRun
+			size: 20
+			#color: '005B96'
+			font: name: 'Monospace'
+			text: ' - обязательное поле'
+		p =new Paragraph ##005B96
+			children: txts
+			spacing: 
+				before: 70
+				after: 70
+			indent:
+				left: 70
+		@list .push p
 		# for parameter in @group
 		# 	txt =new TextRun
 		# 		size: 25

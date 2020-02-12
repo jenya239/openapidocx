@@ -6,7 +6,7 @@ main =
 		@source =process .argv .pop()
 		rawdata =fs .readFileSync @source
 		@json =JSON .parse rawdata
-		console .log @json .tags
+		#console .log @json .tags
 		# return
 		# @list =[]
 		# require( './app/processing' ) .create @json, 0, @list
