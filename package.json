@@ -19,6 +19,6 @@
   "homepage": "https://github.com/jenya239/openapidocx#readme",
   "dependencies": {
     "coffeescript": "^2.5.1",
-    "docx": "^5.0.2"
+    "docx": "^9.1.0"
   }
 }
